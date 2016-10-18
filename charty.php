@@ -34,6 +34,28 @@ Author URI: http://www.pa-bru.com/
     }
 
 
+//add the admin scripts :     
+	add_action( 'admin_enqueue_scripts', 'add_admin_scripts', 10, 2 );
+	function add_admin_scripts($post_type, $post) {
+		if ( 'charty' == $post_type ) {     
+            wp_enqueue_script( 'jquery');
+			wp_enqueue_script( 'my-script', plugins_url( '/js/my_js.js', __FILE__ ), array('jquery') );
+
+			// in JavaScript, object properties are accessed as ajax_object.ajax_url, ajax_object.we_value
+			wp_localize_script( 'my-script', 'coucou',
+		            array( 'truc' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
+        }
+	}
+
+//add the admin styles :
+	add_action( 'admin_print_styles', 'charty_admin_styles', 10, 2 );
+	function charty_admin_styles($post_type, $post){
+	    if( $post_type == 'charty' ) {
+	        wp_enqueue_style( 'charty_styles', plugin_dir_url( __FILE__ ) . '/css/charty-styles.css' );
+	    }
+	}
+	
+
 //add meta boxes :
 	add_action('add_meta_boxes', 'charty_meta_boxes', 10, 2);
 	function charty_meta_boxes($post_type, $post){
@@ -41,6 +63,7 @@ Author URI: http://www.pa-bru.com/
 			add_meta_box('charty_meta_box', __( 'Information of the chart', 'charty' ), 'charty_meta_box', $post_type, 'normal', 'high');
 		}
 	}
+
 //write meta box :
 	function charty_meta_box($post){
 		$charty_display_mode =  get_post_meta($post->ID,'_charty_display_mode',true);
@@ -70,20 +93,30 @@ Author URI: http://www.pa-bru.com/
 			</div>
 		<!-- END CHARTY SHORTCODE -->
 
+		<!-- START CHARTY TYPE -->
+			<div class="meta-box-item-title">
+				<h4><?php _e('Choose the type of Map (map or geographic chart', 'charty'); ?></h4>
+			</div>
 
-        <!-- START CHARTY COLOR AXIS ARRAY -->
-        <div class="meta-box-item-title">
-            <h4>
-                <?php
-                _e('Put your Google Maps API KEY here', 'charty');
-                ?>
-            </h4>
-        </div>
+			<div class="meta-box-item-content">
+				<input style="width:100%" type="checkbox" name="charty_type" id="charty_shortcode" value="<?php echo '[charty_shortcode id='. $post->ID . ']'; ?>"/>
+			</div>
+		<!-- END CHARTY TYPE -->
 
-        <div class="meta-box-item-content">
-            <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>"/>
-        </div>
-        <!-- END CHARTY COLOR AXIS ARRAY -->
+
+        <!-- START CHARTY GOOGLE MAPS API KEY -->
+	        <div class="meta-box-item-title">
+	            <h4>
+	                <?php
+	                _e('Put your Google Maps API KEY here', 'charty');
+	                ?>
+	            </h4>
+	        </div>
+
+	        <div class="meta-box-item-content">
+	            <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>"/>
+	        </div>
+        <!-- END CHARTY GOOGLE MAPS API KEY -->
 
 		<!-- START CHARTY DISPLAY MODE -->
 			<div class="meta-box-item-title">
@@ -137,7 +170,7 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('Colors to assign to values in the visualization. It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)', 'charty');
+                    _e('Color Axis : Colors to assign to values in the visualization. It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)', 'charty');
                     ?>
                 </h4>
             </div>
@@ -152,7 +185,7 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('The background color for the main area of the chart. (by color name or hexadecimal value)', 'charty');
+                    _e('Background : The background color for the main area of the chart. (by color name or hexadecimal value)', 'charty');
                     ?>
                 </h4>
             </div>
@@ -166,7 +199,7 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('Color to assign to regions with no associated data.(by name or hexadecimal value)', 'charty');
+                    _e('Dataless Region color :Color to assign to regions with no associated data.(by name or hexadecimal value)', 'charty');
                     ?>
                 </h4>
             </div>
@@ -290,7 +323,9 @@ Author URI: http://www.pa-bru.com/
 			}
 
         //TODO : extract default settings !
-
+				function mytrim( &$item1, $key, &$separation ) { 
+				   $item1 = trim($item1, $separation); 
+				} 
 
 		//values of the charty post :
             //API Key :
@@ -323,6 +358,9 @@ Author URI: http://www.pa-bru.com/
 
             //labels :
                 $charty_labels = get_post_meta($atts['id'],'_charty_labels',true);
+                //remove whitespaces on the line and semi-colon.
+                $charty_labels = trim($charty_labels);
+                $charty_labels = trim($charty_labels, ";");
                 $charty_labels = strToArray($charty_labels, ";");
                 $charty_labels = array_map('trim',$charty_labels);
 
@@ -332,13 +370,20 @@ Author URI: http://www.pa-bru.com/
 
                 // build array with each line of textarea :
                 $array_of_lines = strToArray($charty_data, "\n");
-                $array_of_lines = array_filter($array_of_lines, 'trim'); // remove any extra \r characters left behind
+                $array_of_lines = array_map('trim',$array_of_lines);
+				array_walk($array_of_lines, 'mytrim', ";" ); 
 
                 //bluid array for each element of the current line :
                 $array_data = [];
                 foreach ($array_of_lines as $line) {
                     $line_to_array = strToArray($line, ";");
-                    $array_data[] = array_map('trim',$line_to_array);
+                    //var_dump($line_to_array);die();
+                    $line_to_array = array_map('trim',$line_to_array);
+                    
+
+                    	$line_to_array[1] = (int)$line_to_array[1];
+                    
+                    $array_data[] = $line_to_array;
                 }
 
             //description
@@ -367,7 +412,7 @@ Author URI: http://www.pa-bru.com/
 		
 		//Display the charty post :
 			$display_charty = '<h2>'.$charty_title.'</h2>'
-								.'<div id="charty_'.$atts['id'].'" style="height: 400px;"></div>'
+								.'<div id="charty_'.$atts['id'].'" style="height: 600px;"></div>'
 								.'<p style="text-align:center;font-style:italic;">'.$charty_description.'</p>';
 
 			return $display_charty;
