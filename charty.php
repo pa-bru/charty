@@ -1,4 +1,13 @@
 <?php
+/*
+Plugin name: Charty - a google geochart plugin 
+Description: This plugin enables you to create and manage google geographic charts. It's a useful tool to display demographic data on geographic charts but also on google maps (there is a Map display mode).
+You can also customize your geographic charts (title, content, context, background, color gradient...).
+Version: 1.0
+Author: P-A BRU
+Author URI: https://www.pa-bru.fr/
+*/
+
 
 //blocking direct access to the plugin PHP files	
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
@@ -19,7 +28,6 @@ class Charty {
 
 	const DESCRIPTION_MAX_LENGTH = 100;
 
-
 	public static function get_instance(){
         if(!(static::$charty instanceof static)){
             static::$charty = new static;
@@ -29,7 +37,6 @@ class Charty {
 
 	public function __construct() {
 		$this->setProperties();
-		$this->getRequireFiles();
 	
 		//apply translation of the plugin :
 		add_action( 'plugins_loaded', array( $this, 'charty_load_textdomain'));
@@ -120,10 +127,9 @@ class Charty {
         wp_enqueue_style( 'charty_styles', plugin_dir_url( __FILE__ ) . '/css/charty-styles.css' );
 	}
 
-
 	public function charty_meta_boxes($post_type, $post){
 		if($this->cpt_name == $post_type){
-			add_meta_box('charty_meta_box', __( 'Information of the chart', $this->plugin_l10n ), 'charty_meta_box', $post_type, 'normal', 'high');
+			add_meta_box('charty_meta_box', __( 'Information of the chart', $this->plugin_l10n ), array($this, 'charty_meta_box'), $post_type, 'normal', 'high');
 		}
 	}
 
@@ -162,6 +168,14 @@ class Charty {
 		?>
 
 		<!-- START CHARTY SHORTCODE -->
+
+			<div class="charty-alert charty-alert-warning">
+    	       <p><?php _e('Warning : for the two modes (map and geochart) you must add exactly 2 columns (ex: City; Population) !', $this->plugin_l10n); ?></p>
+               <ul>
+                   <li><?php _e('geochart syntax : country or city; Number', $this->plugin_l10n); ?></li>
+                   <li><?php _e('Map syntax : place; text or number', $this->plugin_l10n); ?></li>
+               </ul>
+    	    </div>
 			<div class="meta-box-item-title">
 				<h4><?php _e('Shortcode to paste in the post you want', $this->plugin_l10n); ?></h4>
 			</div>
@@ -203,12 +217,13 @@ class Charty {
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('Labels of the chart (same number of column as data column). Put 2 labels. Separate each label by a semi column', $this->plugin_l10n);
+                    _e('Labels of the chart (same number of column as data column) :', $this->plugin_l10n);
                     ?>
                 </h4>
             </div>
 
-            <div class="meta-box-item-content">
+            <div class="meta-box-item-content charty-alert charty-alert-info">
+                <p><?php _e('Put 2 labels. Separate each label by a semi column', $this->plugin_l10n); ?></p>
                 <input maxlength="200" style="width:100%" type="text" name="charty_labels" id="charty_labels" value="<?php echo $charty_labels;?>"/>
             </div>
         <!-- END CHARTY LABELS ARRAY -->
@@ -221,7 +236,7 @@ class Charty {
                     ?>
                 </h4>
             </div>
-            <div class="meta-box-item-content">
+            <div class="meta-box-item-content charty-alert charty-alert-info">
                 <p><?php _e('Separate each value by a semi column and each entity of the chart by a new line', $this->plugin_l10n); ?></p>
                 <p><?php _e('The first data must be a Country or City (and must belong to the region you have chosen to display the geochart).The second data must be a number but can be a string if you chose the Map Type!', $this->plugin_l10n); ?></p>
                 <p><?php _e('Exemple : Paris;3456.98 ', $this->plugin_l10n); ?></p>
@@ -450,7 +465,6 @@ class Charty {
     }
 
     public function charty_shortcode($atts){
-		
 		//verifying if id parameter in shortcode is an int :
 			$atts['id'] = intval($atts['id']);
 			if ( !$atts['id'] ){
@@ -482,7 +496,7 @@ class Charty {
             //remove whitespaces on the line and semi-colon.
             $charty_labels = trim($charty_labels);
             $charty_labels = trim($charty_labels, ";");
-            $charty_labels = strToArray($charty_labels, ";");
+            $charty_labels = $this->strToArray($charty_labels, ";");
             $charty_labels = array_map('trim',$charty_labels);
 
         //data :
@@ -490,14 +504,14 @@ class Charty {
             $charty_data = trim($charty_data);
 
             // build array with each line of textarea :
-            $array_of_lines = strToArray($charty_data, "\n");
+            $array_of_lines = $this->strToArray($charty_data, "\n");
             $array_of_lines = array_map('trim',$array_of_lines);
-            array_walk($array_of_lines, 'mytrim', ";" );
+            array_walk($array_of_lines, array($this, 'mytrim'), ";" );
 
             //bluid array for each element of the current line :
             $array_data = [];
             foreach ($array_of_lines as $line) {
-                $line_to_array = strToArray($line, ";");
+                $line_to_array = $this->strToArray($line, ";");
                 $line_to_array = array_map('trim',$line_to_array);
 
                 if($charty_type == "geo_chart"){
@@ -510,7 +524,6 @@ class Charty {
             if ( strlen( $charty_description ) > self::DESCRIPTION_MAX_LENGTH ){
                 $charty_description = substr( $charty_description, 0, self::DESCRIPTION_MAX_LENGTH );
             }
-
 
         switch($charty_type){
             case "geo_chart":
@@ -536,7 +549,7 @@ class Charty {
                 $charty_color_axis = get_post_meta($atts['id'],'_charty_color_axis',true);
                 $charty_color_axis = trim($charty_color_axis);
                 $charty_color_axis = trim($charty_color_axis, ";");
-                $charty_color_axis = strToArray($charty_color_axis, ";");
+                $charty_color_axis = $this->strToArray($charty_color_axis, ";");
                 $charty_color_axis = array_map('trim',$charty_color_axis);
 
                 $spe_vars = array(
@@ -548,7 +561,6 @@ class Charty {
                     'charty_dataless_region_color' => $charty_dataless_region_color,
                     'charty_default_color' => $charty_default_color,
                 );
-
                 break;
             case "map":
                 $charty_map_zoom_level =  get_post_meta($atts['id'],'_charty_map_zoom_level',true);

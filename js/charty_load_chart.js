@@ -3,10 +3,6 @@ var chart_div = document.getElementById('charty_'+ charty.charty_id);
 google.charts.load('upcoming', {mapsApiKey: myMapsApiKey, 'packages':['geochart', 'map']});
 
 charty.charty_data.unshift(charty.charty_labels);
-console.log("coucou");
-console.log(charty.charty_data);
-console.log(charty.charty_data.toString());
-console.log("coucou");
 
 switch(charty.charty_type){
     case "geo_chart":
