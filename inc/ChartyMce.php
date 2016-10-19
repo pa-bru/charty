@@ -27,17 +27,4 @@ class ChartyMce {
         $plugin_array['charty'] =  plugins_url() . '/charty/inc/charty_mce.js.php' ;
         return $plugin_array;
     }
-
-    public function get_all_published_charty(){
-        $query = new WP_Query(array(
-            'post_type' => 'charty',
-            'post_status' => 'publish'
-        ));
-        while ($query->have_posts()) {
-            $query->the_post();
-            $post_id = get_the_ID();
-            echo $post_id;
-            echo "<br>";
-        }
-    }
 }

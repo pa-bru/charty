@@ -21,7 +21,8 @@ class Charty {
 	private $app_name = 'Charty';
 	private $cpt_name = 'charty';
 
-	public static $charty;
+	protected static $charty;
+    protected $mce;
 
 	protected $countries;
 	protected $continents_and_subs;
@@ -37,6 +38,10 @@ class Charty {
 
 	public function __construct() {
 		$this->setProperties();
+
+        require($this->plugin_path . 'inc/ChartyMce.php');
+
+        $this->mce = new ChartyMce();
 	
 		//apply translation of the plugin :
 		add_action( 'plugins_loaded', array( $this, 'charty_load_textdomain'));
