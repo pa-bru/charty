@@ -1,19 +1,28 @@
 jQuery(document).ready(function($) {
-
-
-		$('input[name="charty_type"').on('click', function(){
-			$(this).hide();
-		})
-
-	console.log('wesh gros');
-	console.log(coucou.truc);
-
-	/*var data = {
-		'action': 'my_action',
-		'whatever': ajax_object.we_value      // We pass php values differently!
-	};
-	// We can also pass the url value separately from ajaxurl for front end AJAX implementations
-	jQuery.post(ajax_object.ajax_url, data, function(response) {
-		alert('Got this from the server: ' + response);
-	});*/
+    var $radioGroup = $("input[type=radio][name=charty_type]");
+    // Change the form on click radio buttons :
+    $radioGroup.on("change", function () {
+        if (this.value == 'map') {
+            $('div[data-map]').slideDown(500);
+            $('div[data-geochart]').slideUp(500);
+        }
+        else if (this.value == 'geo_chart') {
+            $('div[data-geochart]').slideDown(500);
+            $('div[data-map]').slideUp(500);
+        }
+    });
+    //on load document if one type is already chosen (when update a chart) : we hide the other one :
+    if ($("input[type=radio][name=charty_type]:checked").val() == 'map') {
+        $('div[data-geochart]').hide();
+        $('div[data-map]').show();
+    }
+    else if ($radioGroup.val() == 'geo_chart') {
+        $('div[data-map]').hide();
+        $('div[data-geochart]').show();
+    }
+    //Hide two charty types on init a new chart : (because no one is selected) :
+    if (!$radioGroup.is(":checked")) {
+        $('div[data-map]').hide();
+        $('div[data-geochart]').hide();
+    }
 });
