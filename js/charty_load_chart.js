@@ -63,7 +63,7 @@ function drawMap() {
         useMapTypeControl: charty.charty_map_type_control,
         maps: {
             greenAll: {
-                name: 'Styled Map',
+                name: 'color green',
                 styles: [
                     {featureType: 'poi.attraction',
                         stylers: [{color: '#fce8b2'}]},
@@ -75,7 +75,7 @@ function drawMap() {
                         stylers: [{hue: '#259b24'}, {saturation: 10},{lightness: -22}]}
                 ]},
             redAll: {
-                name: 'Redden All The Things',
+                name: 'color red',
                 styles: [
                     {featureType: 'landscape',
                         stylers: [{color: '#fde0dd'}]},
@@ -91,7 +91,7 @@ function drawMap() {
                         stylers: [{color: '#ff0000'}, {saturation: 50}, {lightness: -50}]}
                 ]},
             blueAll: {
-                name: 'All Your Blues are Belong to Us',
+                name: 'color blue',
                 styles: [
                     {featureType: 'landscape',
                         stylers: [{color: '#c5cae9'}]},

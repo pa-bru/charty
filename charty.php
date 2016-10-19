@@ -1,67 +1,144 @@
 <?php
-/*
-Plugin name: Charty - a google chart plugin
-Description: This plugin enables you to create and manage cgoogle harts. You can also customize your charts (title, content, context...).
-Version: 1.0
-Author: P-A BRU
-Author URI: http://www.pa-bru.com/
-*/
 
-	
 //blocking direct access to the plugin PHP files	
-	defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-//apply translation of the plugin :
-	add_action( 'plugins_loaded', 'charty_load_textdomain' );
-	function charty_load_textdomain() {
-		load_plugin_textdomain('charty', false, plugin_basename(dirname(__FILE__)) . '/languages');
-	}
+class Charty {
+	private $plugin_path;
+	private $plugin_url;
+	private $plugin_version;
+	private $plugin_l10n;
+	private $api_base = 'https://www.gstatic.com/charts/loader.js';
+	private $app_name = 'Charty';
+	private $cpt_name = 'charty';
 
-//globals :
-	$description_maxlength = 100;
+	public static $charty;
+
+	protected $countries;
+	protected $continents_and_subs;
+
+	const DESCRIPTION_MAX_LENGTH = 100;
 
 
-//requires :
-	require( plugin_dir_path( __FILE__ ) . 'inc/cpt.inc.php');
-	require( plugin_dir_path( __FILE__ ) . 'inc/places-code.php');
-
-//Enqueued script with localized data.
-//add the scripts :
-    add_action( 'wp_enqueue_scripts', 'add_plugin_scripts' );
-    function add_plugin_scripts(){
-        wp_enqueue_script('charty_load_chart', plugins_url( '/js/charty_load_chart.js' , __FILE__ ), array("google_charts_api"), false, true);
-        wp_enqueue_script('google_charts_api','https://www.gstatic.com/charts/loader.js' , array(), false, true);
+	public static function get_instance(){
+        if(!(static::$charty instanceof static)){
+            static::$charty = new static;
+        }
+        return static::$charty;
     }
 
-
-//add the admin scripts :     
-	add_action( 'admin_enqueue_scripts', 'add_admin_scripts', 10, 2 );
-	function add_admin_scripts() {
-        wp_enqueue_script( 'jquery');
-        wp_enqueue_script( 'my-script', plugins_url( '/js/my_js.js', __FILE__ ), array('jquery') );
-
-        // in JavaScript, object properties are accessed as ajax_object.ajax_url, ajax_object.we_value
-        wp_localize_script( 'my-script', 'coucou',
-                array( 'truc' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
+	public function __construct() {
+		$this->setProperties();
+		$this->getRequireFiles();
+	
+		//apply translation of the plugin :
+		add_action( 'plugins_loaded', array( $this, 'charty_load_textdomain'));
+		//register charty custom post type :
+		add_action( 'init', array($this,'charty'), 0 );
+		//add the scripts :
+	    add_action( 'wp_enqueue_scripts', array($this, 'add_plugin_scripts'));
+		//add the admin scripts :     
+		add_action( 'admin_enqueue_scripts', array($this, 'add_admin_scripts'), 10, 2 );
+		//add the admin styles :
+		add_action( 'admin_print_styles', array($this, 'charty_admin_styles'), 10, 2 );
+		//add meta boxes :
+		add_action('add_meta_boxes', array($this, 'charty_meta_boxes'), 10, 2);//and exec the method charty_meta_box to write the meta boxes
+		//save charty meta box with update :
+		add_action('save_post',array($this, 'save_charty_metabox_data'));
+		// create shortcode :
+		add_shortcode('charty_shortcode', array($this,'charty_shortcode'));
 	}
 
-//add the admin styles :
-	add_action( 'admin_print_styles', 'charty_admin_styles', 10, 2 );
-	function charty_admin_styles(){
+	public function setProperties(){
+		$this->plugin_path    			= plugin_dir_path( __FILE__ );
+		$this->plugin_url     			= plugin_dir_url( __FILE__ );
+		$this->plugin_version 			= '1.0';
+		$this->plugin_l10n    			= 'charty';
+		$this->countries      			= require_once( $this->plugin_path . 'inc/countries.php');
+		$this->continents_and_subs      = require_once( $this->plugin_path . 'inc/continents_and_subs.php');
+	}
+
+	public function charty_load_textdomain() {
+		load_plugin_textdomain( $this->plugin_l10n, false, plugin_basename(dirname(__FILE__)) . '/languages');
+	}
+
+	// Register Custom Post Type
+	public function charty() {
+		$labels = array(
+			'name'                  => _x( 'charty', 'Post Type General Name', 'charty' ),
+			'singular_name'         => _x( 'charty', 'Post Type Singular Name', 'charty' ),
+			'menu_name'             => __( 'charty', 'charty' ),
+			'name_admin_bar'        => __( 'charty', 'charty' ),
+			'parent_item_colon'     => __( '', 'charty' ),
+			'all_items'             => __( 'All charts', 'charty' ),
+			'add_new_item'          => __( 'Add a new chart', 'charty' ),
+			'add_new'               => __( 'Add new', 'charty' ),
+			'new_item'              => __( 'New chart', 'charty' ),
+			'edit_item'             => __( 'Edit chart', 'charty' ),
+			'update_item'           => __( 'Update chart', 'charty' ),
+			'view_item'             => __( 'View chart', 'charty' ),
+			'search_items'          => __( 'Search chart', 'charty' ),
+			'not_found'             => __( 'Not found', 'charty' ),
+			'not_found_in_trash'    => __( 'Not found in Trash', 'charty' ),
+			'items_list'            => __( 'chart list', 'charty' ),
+			'items_list_navigation' => __( 'chart list navigation', 'charty' ),
+			'filter_items_list'     => __( 'Filter chart list', 'charty' ),
+		);
+		$args = array(
+			'label'                 => __( 'charty', 'charty' ),
+			'description'           => __( 'Used to manage your charts.', 'charty' ),
+			'labels'                => $labels,
+			'supports'              => array( 'title', ),
+			'hierarchical'          => false,
+			'public'                => true,
+			'show_ui'               => true,
+			'show_in_menu'          => true,
+			'menu_position'         => 80,
+			'menu_icon'             => 'dashicons-chart-pie',
+			'show_in_admin_bar'     => true,
+			'show_in_nav_menus'     => true,
+			'can_export'            => true,
+			'has_archive'           => true,		
+			'exclude_from_search'   => false,
+			'publicly_queryable'    => true,
+			'capability_type'       => 'page',
+		);
+		register_post_type( 'charty', $args );
+	}
+
+	public function add_plugin_scripts(){
+        wp_enqueue_script('charty_load_chart', plugins_url( '/js/charty_load_chart.js' , __FILE__ ), array("google_charts_api"), $this->plugin_version, true);
+        wp_enqueue_script('google_charts_api', $this->api_base , array(), false, true);
+    }
+
+    public function add_admin_scripts() {
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('charty_panel', plugins_url( '/js/charty-panel.js', __FILE__ ), array('jquery'), $this->plugin_version, true);
+	}
+
+	public function charty_admin_styles(){
         wp_enqueue_style( 'charty_styles', plugin_dir_url( __FILE__ ) . '/css/charty-styles.css' );
 	}
-	
 
-//add meta boxes :
-	add_action('add_meta_boxes', 'charty_meta_boxes', 10, 2);
-	function charty_meta_boxes($post_type, $post){
-		if('charty' == $post_type){
-			add_meta_box('charty_meta_box', __( 'Information of the chart', 'charty' ), 'charty_meta_box', $post_type, 'normal', 'high');
+
+	public function charty_meta_boxes($post_type, $post){
+		if($this->cpt_name == $post_type){
+			add_meta_box('charty_meta_box', __( 'Information of the chart', $this->plugin_l10n ), 'charty_meta_box', $post_type, 'normal', 'high');
 		}
 	}
 
-//write meta box :
-	function charty_meta_box($post){
+	// String to Array function :
+    public function strToArray($str, $separation){
+        $tab = explode($separation, $str);
+        return $tab;
+    }
+
+	public function mytrim( &$item1, $key, &$separation ) {
+	    $item1 = trim($item1, $separation);
+	}
+
+	//write meta box :
+	public function charty_meta_box($post){
         //geo chart type :
 		$charty_display_mode =  get_post_meta($post->ID,'_charty_display_mode',true);
 		$charty_region =  get_post_meta($post->ID,'_charty_region',true);
@@ -82,15 +159,11 @@ Author URI: http://www.pa-bru.com/
         $charty_map_zoom_level =  get_post_meta($post->ID,'_charty_map_zoom_level',true);
         $charty_map_style =  get_post_meta($post->ID,'_charty_map_style',true);
         $charty_map_type_control = get_post_meta($post->ID,'_charty_map_type_control',true);
-
-        global $description_maxlength;
-        global $countries;
-        global $continents_and_subs;
 		?>
 
 		<!-- START CHARTY SHORTCODE -->
 			<div class="meta-box-item-title">
-				<h4><?php _e('Shortcode to paste in the post you want', 'charty'); ?></h4>
+				<h4><?php _e('Shortcode to paste in the post you want', $this->plugin_l10n); ?></h4>
 			</div>
 
 			<div class="meta-box-item-content">
@@ -102,7 +175,7 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('Put your Google Maps API KEY here', 'charty');
+                    _e('Put your Google Maps API KEY here', $this->plugin_l10n);
                     ?>
                 </h4>
             </div>
@@ -116,12 +189,12 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    printf(esc_html__( 'The description you want : (%d characters max)', 'charty' ), $description_maxlength);
+                    printf(esc_html__( 'The description you want : (%d characters max)', $this->plugin_l10n ), self::DESCRIPTION_MAX_LENGTH);
                     ?>
                 </h4>
             </div>
             <div class="meta-box-item-content">
-                <input maxlength="<?php echo $description_maxlength;?>" style="width:100%" type="text" name="charty_description" id="charty_description"
+                <input maxlength="<?php echo self::DESCRIPTION_MAX_LENGTH;?>" style="width:100%" type="text" name="charty_description" id="charty_description"
                        value="<?php echo $charty_description;?>"/>
             </div>
         <!-- END CHARTY DESCRIPTION -->
@@ -130,7 +203,7 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('Labels of the chart (same number of column as data column). Separate each label by a semi column', 'charty');
+                    _e('Labels of the chart (same number of column as data column). Put 2 labels. Separate each label by a semi column', $this->plugin_l10n);
                     ?>
                 </h4>
             </div>
@@ -144,68 +217,66 @@ Author URI: http://www.pa-bru.com/
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('DATA List : Every data of the chart (same number of column as labels). Separate each value by a semi column and each entity of the chart by a new line', 'charty');
+                    _e('DATA List : Every data of the chart (same number of column as labels). Separate each value by a semi column and each entity of the chart by a new line', $this->plugin_l10n);
                     ?>
                 </h4>
             </div>
-
             <div class="meta-box-item-content">
-                <p>Separate each value by a semi column and each entity of the chart by a new line</p>
-                <p>The first data must be a Country or City (and must belong to the region you have chosen to display the geochart).The second data must be a number but can be a string if you chose the Map Type!</p>
-                <p>Exemple : Paris;3456.98 </p>
+                <p><?php _e('Separate each value by a semi column and each entity of the chart by a new line', $this->plugin_l10n); ?></p>
+                <p><?php _e('The first data must be a Country or City (and must belong to the region you have chosen to display the geochart).The second data must be a number but can be a string if you chose the Map Type!', $this->plugin_l10n); ?></p>
+                <p><?php _e('Exemple : Paris;3456.98 ', $this->plugin_l10n); ?></p>
                 <textarea rows="10" style="width:100%" name="charty_data" id="charty_data"><?php echo $charty_data; ?></textarea>
             </div>
         <!-- END CHARTY DATA ARRAY -->
 
 		<!-- START CHARTY TYPE -->
 			<div class="meta-box-item-title">
-				<h4><?php _e('Choose the type of Map (map or geographic chart)', 'charty'); ?></h4>
+				<h4><?php _e('Choose the type of Map (map or geographic chart)', $this->plugin_l10n); ?></h4>
 			</div>
 
             <input type="radio" name="charty_type" class="charty_type" id="charty_type_geo_chart" value="geo_chart"  <?php checked( "geo_chart", $charty_type); ?>/>
-            <label for="charty_type_geo_chart"><?php _e('Geo chart', 'charty'); ?></label>
+            <label for="charty_type_geo_chart"><?php _e('Geo chart', $this->plugin_l10n); ?></label>
 
             <input type="radio" name="charty_type" class="charty_type" id="charty_type_map" value="map" <?php checked( "map", $charty_type); ?>/>
-            <label for="charty_type_map"><?php _e('Map', 'charty'); ?></label>
+            <label for="charty_type_map"><?php _e('Map', $this->plugin_l10n); ?></label>
 		<!-- END CHARTY TYPE -->
 
         <!-- START GEOCHART TYPE  -->
-        <!-------------------------->
             <div data-geochart>
                 <br/>
                 <hr/>
                 <h3>
                     <?php
-                    _e('Geographic Chart Type :', 'charty');
+                    _e('Geographic Chart Type :', $this->plugin_l10n);
                     ?>
                 </h3>
                 <!-- START CHARTY DISPLAY MODE -->
                     <div class="meta-box-item-title">
-                        <h4><?php _e('Display mode you want for your chart', 'charty'); ?></h4>
+                        <h4><?php _e('Display mode you want for your chart', $this->plugin_l10n); ?></h4>
                     </div>
 
                     <div class="meta-box-item-content">
                         <select name="charty_display_mode" id="charty_display_mode">
-                            <option <?php selected( 'markers', $charty_display_mode );?> value="markers"><?php _e('Markers', 'charty'); ?></option>
-                            <option <?php selected( 'regions', $charty_display_mode );?> value="regions"><?php _e('Regions', 'charty'); ?></option>
-                            <option <?php selected( 'text', $charty_display_mode );?> value="text"><?php _e('Text', 'charty'); ?></option>
-                            <option <?php selected( 'auto', $charty_display_mode ) ;?>value="auto"><?php _e('Auto', 'charty'); ?></option>
+                            <option <?php selected( 'markers', $charty_display_mode );?> value="markers"><?php _e('Markers', $this->plugin_l10n); ?></option>
+                            <option <?php selected( 'regions', $charty_display_mode );?> value="regions"><?php _e('Regions', $this->plugin_l10n); ?></option>
+                            <option <?php selected( 'text', $charty_display_mode );?> value="text"><?php _e('Text', $this->plugin_l10n); ?></option>
+                            <option <?php selected( 'auto', $charty_display_mode ) ;?>value="auto"><?php _e('Auto', $this->plugin_l10n); ?></option>
                         </select>
                     </div>
                 <!-- END CHARTY DISPLAY MODE -->
 
                 <!-- START CHARTY REGION -->
                     <div class="meta-box-item-title">
-                        <h4><?php _e('Region you want to display on your chart', 'charty'); ?></h4>
+                        <h4><?php _e('Region you want to display on your chart', $this->plugin_l10n); ?></h4>
                     </div>
 
                     <div class="meta-box-item-content">
                         <select name="charty_region" id="charty_region">
                             <option <?php selected( 'world', $charty_region ) ;?>value="world">world</option>
-                            <?php foreach($continents_and_subs as $key => $val){?>
+                            <?php foreach($this->continents_and_subs as $key => $val){?>
                                 <option <?php selected( $key, $charty_region ) ;?>value="<?php echo $key; ?>"><?php echo $val; ?></option>
                             <?php } ?>
-                            <?php foreach($countries as $key => $val){?>
+                            <?php foreach($this->countries as $key => $val){?>
                                 <option <?php selected( $key, $charty_region ) ;?>value="<?php echo $key; ?>"><?php echo $val; ?></option>
                             <?php } ?>
                         </select>
@@ -214,7 +285,7 @@ Author URI: http://www.pa-bru.com/
 
                 <!-- START CHARTY TOOLTIP TRIGGER -->
                     <div class="meta-box-item-title">
-                        <h4><?php _e('Region you want to display on your chart', 'charty'); ?></h4>
+                        <h4><?php _e('Region you want to display on your chart', $this->plugin_l10n); ?></h4>
                     </div>
 
                     <div class="meta-box-item-content">
@@ -230,7 +301,7 @@ Author URI: http://www.pa-bru.com/
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Color Axis : Colors to assign to values in the visualization. It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)', 'charty');
+                            _e('Color Axis : Colors to assign to values in the visualization. It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
@@ -244,7 +315,7 @@ Author URI: http://www.pa-bru.com/
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Background : The background color for the main area of the chart. (by color name or hexadecimal value)', 'charty');
+                            _e('Background : The background color for the main area of the chart. (by color name or hexadecimal value)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
@@ -258,7 +329,7 @@ Author URI: http://www.pa-bru.com/
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Dataless Region color :Color to assign to regions with no associated data.(by name or hexadecimal value)', 'charty');
+                            _e('Dataless Region color :Color to assign to regions with no associated data.(by name or hexadecimal value)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
@@ -272,7 +343,7 @@ Author URI: http://www.pa-bru.com/
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('The color to use when for data points in a geochart when the location is present but the value is either null or unspecified.(by name or hexadecimal value)', 'charty');
+                            _e('The color to use when for data points in a geochart when the location is present but the value is either null or unspecified.(by name or hexadecimal value)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
@@ -283,29 +354,27 @@ Author URI: http://www.pa-bru.com/
                 <!-- END CHARTY DEFAULT COLOR -->
             </div>
         <!-- END GEOCHART TYPE  -->
-        <!-------------------------->
 
         <!-- START MAP TYPE  -->
-        <!-------------------------->
             <div data-map>
                 <br/>
                 <hr/>
                 <h3>
                     <?php
-                    _e('MAP Type :', 'charty');
+                    _e('MAP Type :', $this->plugin_l10n);
                     ?>
                 </h3>
                 <!-- START CHARTY MAP ZOOM LEVEL -->
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Zoom Level of the map. (between 0 and 19', 'charty');
+                            _e('Zoom Level of the map. (between 0 and 19', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
 
                     <div class="meta-box-item-content">
-                        <p>put a number between 0 and 19. 0 is the world and 19 is the maximum zoom.</p>
+                        <p><?php _e('Put a number between 0 and 19. 0 is the world and 19 is the maximum zoom.', $this->plugin_l10n); ?></p>
                         <input type="number" style="" min="0" max="19" name="charty_map_zoom_level" id="charty_map_zoom_level" value="<?php echo $charty_map_zoom_level ;?>" placeholder="ex : 4"/>
                     </div>
                 <!-- END CHARTY MAP ZOOM LEVEL -->
@@ -313,43 +382,40 @@ Author URI: http://www.pa-bru.com/
 
                 <!-- START CHARTY STYLE MAP -->
                     <div class="meta-box-item-title">
-                        <h4><?php _e('The design of the map :', 'charty'); ?></h4>
+                        <h4><?php _e('The design of the map :', $this->plugin_l10n); ?></h4>
                     </div>
 
                     <div class="meta-box-item-content">
                         <select name="charty_map_style" id="charty_map_style">
-                            <option <?php selected( 'none', $charty_map_style );?> value="none"><?php _e('None', 'charty'); ?></option>
-                            <option <?php selected( 'green', $charty_map_style );?> value="green"><?php _e('Green', 'charty'); ?></option>
-                            <option <?php selected( 'red', $charty_map_style );?> value="red"><?php _e('Red', 'charty'); ?></option>
-                            <option <?php selected( 'blue', $charty_map_style ) ;?>value="blue"><?php _e('Blue', 'charty'); ?></option>
+                            <option <?php selected( 'none', $charty_map_style );?> value="none"><?php _e('None', $this->plugin_l10n); ?></option>
+                            <option <?php selected( 'green', $charty_map_style );?> value="green"><?php _e('Green', $this->plugin_l10n); ?></option>
+                            <option <?php selected( 'red', $charty_map_style );?> value="red"><?php _e('Red', $this->plugin_l10n); ?></option>
+                            <option <?php selected( 'blue', $charty_map_style ) ;?>value="blue"><?php _e('Blue', $this->plugin_l10n); ?></option>
                         </select>
                     </div>
                 <!-- END CHARTY STYLE MAP -->
 
                 <!-- START CHARTY MAP TYPE CONTROL -->
                     <div class="meta-box-item-title">
-                        <h4><?php _e('Map Type Control : Authorize the viewer to switch between [map, satellite, hybrid, terrain]', 'charty'); ?></h4>
+                        <h4><?php _e('Map Type Control : Authorize the viewer to switch between [map, satellite, hybrid, terrain]', $this->plugin_l10n); ?></h4>
                     </div>
 
-                    <input type="radio" name="charty_map_type_control" value="false"  <?php checked( "false", $charty_map_type_control); ?>/>
-                    <label for="charty_map_type_control"><?php _e('No', 'charty'); ?></label>
+                    <input type="radio" name="charty_map_type_control" id="charty_map_type_control_false" value="false"  <?php checked( "false", $charty_map_type_control); ?>/>
+                    <label for="charty_map_type_control_false"><?php _e('No', $this->plugin_l10n); ?></label>
 
-                    <input type="radio" name="charty_map_type_control" value="true" <?php checked( "true", $charty_map_type_control); ?>/>
-                    <label for="charty_map_type_control"><?php _e('Yes', 'charty'); ?></label>
+                    <input type="radio" name="charty_map_type_control" id="charty_map_type_control_true" value="true" <?php checked( "true", $charty_map_type_control); ?>/>
+                    <label for="charty_map_type_control_true"><?php _e('Yes', $this->plugin_l10n); ?></label>
                 <!-- END CHARTY MAP TYPE CONTROL -->
                 <br/>
                 <hr/>
             </div>
         <!-- END MAP TYPE  -->
-        <!-------------------------->
 		<?php
 		// Add a nonce field :
 		wp_nonce_field( 'save_metabox_data', 'charty_meta_box_nonce' );
 	}
 
-//save charty meta box with update :
-	add_action('save_post','save_charty_metabox_data');
-	function save_charty_metabox_data($post_ID){
+	public function save_charty_metabox_data($post_ID){
 		//verify if nonce is valid  and if the request referred from an administration screen :
 		if(!wp_verify_nonce($_POST['charty_meta_box_nonce'], 'save_metabox_data' )){
 			return $post_ID;
@@ -379,42 +445,21 @@ Author URI: http://www.pa-bru.com/
             // Map type :
             update_post_meta($post_ID,'_charty_map_zoom_level', intval($_POST['charty_map_zoom_level']));
             update_post_meta($post_ID,'_charty_map_style', sanitize_text_field($_POST['charty_map_style']));
-
-            if(is_bool($_POST['charty_map_type_control'])){
-                update_post_meta($post_ID,'_charty_map_type_control', $_POST['charty_map_type_control']);
-            } else{
-                update_post_meta($post_ID,'_charty_map_type_control', false);
-            }
+            update_post_meta($post_ID,'_charty_map_type_control', $_POST['charty_map_type_control']);
         }
     }
 
-
-// String to Array function :
-    function strToArray($str, $separation){
-        $tab = explode($separation, $str);
-        return $tab;
-    }
-
-function mytrim( &$item1, $key, &$separation ) {
-    $item1 = trim($item1, $separation);
-}
-
-// create shortcode :
-	add_shortcode('charty_shortcode', 'charty_shortcode');
-	function charty_shortcode($atts){
-
-		//globals :
-			global $description_maxlength;
+    public function charty_shortcode($atts){
 		
 		//verifying if id parameter in shortcode is an int :
 			$atts['id'] = intval($atts['id']);
 			if ( !$atts['id'] ){
-				return __('Chart cannot be displayed because of a false shortcode', 'charty');
+				return __('Chart cannot be displayed because of a false shortcode', $this->plugin_l10n);
 			}
 
 		//verifying if post is a charty and if it exists :
 			$charty_post = get_post($atts['id']);
-			if(!$charty_post->post_type == 'charty' || $charty_post === null ){
+			if(!$charty_post->post_type == $this->cpt_name || $charty_post === null ){
 				return false;
 			}
 
@@ -462,8 +507,8 @@ function mytrim( &$item1, $key, &$separation ) {
             }
         //description
             $charty_description = get_post_meta($atts['id'],'_charty_description',true);
-            if ( strlen( $charty_description ) > $description_maxlength ){
-                $charty_description = substr( $charty_description, 0, $description_maxlength );
+            if ( strlen( $charty_description ) > self::DESCRIPTION_MAX_LENGTH ){
+                $charty_description = substr( $charty_description, 0, self::DESCRIPTION_MAX_LENGTH );
             }
 
 
@@ -542,3 +587,6 @@ function mytrim( &$item1, $key, &$separation ) {
 
 			return $display_charty;
 	}
+}
+
+Charty::get_instance();
