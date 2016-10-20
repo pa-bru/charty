@@ -1,0 +1,232 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: charty - version 1.0 PluginReport-Msgid-Bugs-To: https://github.com/pa-bru/charty\n"
+"POT-Creation-Date: 2015-08-11 11:36-0500\n"
+"PO-Revision-Date: 2016-10-20 18:47+0200\n"
+"Last-Translator: P-A BRU <contact@pa-bru.com>\n"
+"Language-Team: P-A BRU <contact@pa-bru.com>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.10\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: custom-post-type-ui.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: tests\n"
+"X-Poedit-SearchPathExcluded-1: *.js\n"
+
+#: charty.php, ChartyConfigMenu.php, ChartyMce.php, countries.php,
+#: continents_and_subs.php
+msgid "charty"
+msgstr "charty"
+
+msgid "All charts"
+msgstr "Tous les schémas"
+
+msgid "Add a new chart"
+msgstr "Ajouter un nouveau schéma"
+
+msgid "Add new"
+msgstr "Ajouter"
+
+msgid "New chart"
+msgstr "Nouveau schéma"
+
+msgid "Edit chart"
+msgstr "Editer le schéma"
+
+msgid "Update chart"
+msgstr "Mettre à jour le schéma"
+
+msgid "View chart"
+msgstr "Voir le schéma"
+
+msgid "Search chart"
+msgstr "Chercher un schéma"
+
+msgid "Not found"
+msgstr "Pas de résultat"
+
+msgid "Not found in Trash"
+msgstr "Aucun résultat dans la corbeille"
+
+msgid "chart list"
+msgstr "Liste des schémas"
+
+msgid "chart list navigation"
+msgstr "Liste des schémas"
+
+msgid "Filter chart list"
+msgstr "Filtrer la liste des schémas"
+
+msgid "Used to manage your charts."
+msgstr "Utilisé pour gérer vos schémas"
+
+msgid "Information of the chart"
+msgstr "Informations du schéma"
+
+msgid "Warning : for the two modes (map and geochart) you must add exactly 2 columns (ex: City; Population) !"
+msgstr "Attention : Pour les 2 modes (carte et schéma géographique), vous devez ajouter exactement 2 colonnes (ex : Ville; Population) !"
+
+msgid "Geochart syntax : country or city; Number"
+msgstr "Syntaxe pour un schéma géographique : pays ou ville; nombre"
+
+msgid "Map syntax : place; text or number"
+msgstr "Syntaxe pour une carte : Lieu; Texte ou Nombre"
+
+msgid "Shortcode to paste in the post you want"
+msgstr "Shortcode à coller dans la publication de votre choix"
+
+msgid "Put your Google Maps API KEY here"
+msgstr "Indiquez votre clé d'API Google Maps ici"
+
+msgid "The description you want : (%d characters max)"
+msgstr "Description de la carte : (%d caractères maximum)"
+
+msgid "Labels of the chart (same number of columns as data columns) :"
+msgstr "Les labels du schéma (même nombre de colonnes que le nombre de colonnes pour les données"
+
+msgid "Put 2 labels. Separate each label by a semi column"
+msgstr "Précisez 2 labels. Séparez les par un point virgule (;)"
+
+msgid "DATA List : Every data of the chart (same number of column as labels). Separate each value by a semi column and each entity of the chart by a new line"
+msgstr "Liste des données : Toutes les données de la carte (autant de colonne que de labels). Séparez chaque valeur par un point virgule (;) et chaque entité de la carte par un retour à la ligne"
+
+msgid "Separate each value by a semi column and each entity of the chart by a new line"
+msgstr "Séparez chaque valeur par un point virgule (;) et chaque entité de la carte par un retour à la ligne"
+
+msgid "The first data must be a Country or City (and must belong to the region you have chosen to display the geochart).The second data must be a number but can be a string if you chose the Map Type!"
+msgstr "La première valeur de chaque ligne doit être une ville ou un pays appartenant à la zone que vous avez choisie pour afficher le schéma géographique. Le seconde valeur doit être un nombre mais peut être un texte si vous avez choisi le mode Carte"
+
+msgid "Exemple : Paris;3456.98"
+msgstr "Exemple : Paris;3456.98"
+
+msgid "Choose the type of Map (map or geographic chart)"
+msgstr "Choisissez le type de carte (carte ou schéma géographique)"
+
+msgid "Geo chart"
+msgstr "Schéma géographique"
+
+msgid "Map"
+msgstr "Carte"
+
+msgid "Geographic Chart Type :"
+msgstr "Mode schéma géographique"
+
+msgid "Display mode you want for your chart"
+msgstr "Mode d'affichage de votre carte (schéma ou carte google Maps"
+
+msgid "Markers"
+msgstr "Marqueurs"
+
+msgid "Regions"
+msgstr "Régions"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Autow"
+msgstr "Automatique"
+
+msgid "Region you want to display on your chart"
+msgstr "Zone géographique que vous souhaitez afficher"
+
+msgid "world"
+msgstr "Le monde"
+
+msgid "Tooltip trigger : The user interaction that causes the tooltip to be displayed:"
+msgstr "Déclencheur des l'infobulles : L'interaction qui affiche l'infobulle"
+
+msgid "focus"
+msgstr "focus"
+
+msgid "selection"
+msgstr "sélection"
+
+msgid "none"
+msgstr "aucun"
+
+msgid "Color Axis : Colors to assign to values in the visualization."
+msgstr "Axe de couleur : couleurs à assigner sur les zones du schéma."
+
+msgid "It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)"
+msgstr "Crée un dégradé de couleur avec les couleurs que vous choisissez. Séparez chaque couleur par un point virgule (;). Vous devez ajouter au moins 2 couleurs (nom ou valeur héxadécimale)"
+
+msgid "Background : The background color for the main area of the chart. (by color name or hexadecimal value)"
+msgstr "Arrière-plan : la couleur de fond pour la zone principale de le carte. (nom de couleur ou valeur héxadécimale)"
+
+msgid "Dataless Region color : Color to assign to regions with no associated data.(by name or hexadecimal value)"
+msgstr "Couleur des régions sans données : Couleur des régions qui n'ont pas de données assignées. (nom ou valeur héxadécimale)"
+
+msgid "Default color : The color to use for data points in a geochart when the location is present but the value is either null or unspecified.(by name or hexadecimal value)"
+msgstr "Couleur par défaut : Couleur à utiliser pour les zones du schéma dont le lieu est renseigné mais qui n'ont pas de valeur spécifiée. (nom ou valeur héxadécimale)"
+
+msgid "MAP Type :"
+msgstr "Mode carte (google Maps)"
+
+msgid "Zoom Level of the map. (between 0 and 19)"
+msgstr "Niveau de zoom de la carte. (entre 0 et 19)"
+
+msgid "Put a number between 0 and 19. 0 is the world and 19 is the maximum zoom."
+msgstr "Choisissez un nombre entre 0 et 19. 0 correspond à la planète entière et 19 correspond au zoom maximal."
+
+msgid "The design of the map :"
+msgstr "Le style de la carte :"
+
+msgid "green"
+msgstr "vert"
+
+msgid "red"
+msgstr "rouge"
+
+msgid "blue"
+msgstr "bleu"
+
+msgid "Map Type Control : Authorize the viewer to switch between [map, satellite, hybrid, terrain]"
+msgstr "Contrôle de la carte : Autoriser l'utilisateur à changer le style de la carte [carte, satellite, hybride, terrain]"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "Chart cannot be displayed."
+msgstr "La carte ne peut pas être affichée."
+
+msgid "Charty Settings"
+msgstr "Paramètres de Charty"
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Here you can configure all the settings of the Charty plugin"
+msgstr "Cette page vous permet de configurer tous les paramètres du plugin Charty"
+
+msgid "Export list of charts :"
+msgstr "Exporter la liste des schémas géographiques et cartes"
+
+msgid "Click on the button just below to download a file containing information on the charts you have created whith Charty"
+msgstr "Cliquez sur le bouton ci-dessous pour télécharger un fichier csv contenant les informations de vos cartes et schémas géographiques créés avec Charty"
+
+msgid "Export"
+msgstr "Exporter"
+
+msgid "Default Google Maps API Key"
+msgstr "Clé d'Api Google Maps par défaut"
+
+msgid "Put your google Maps API Key here. you can override it when you create a new chart."
+msgstr "Indiquez votre clé d'api Google Maps par défaut. Vous pouvez quand même préciser une autre clé d'api pour chaque carte et schéma que vous créez."
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Your default Google Maps API Key is successfully deleted"
+msgstr "Votre clé d'API Google Maps par défaut a bien été supprimée"
+
+msgid "A new default Google Maps API Key is successfully added"
+msgstr "Une nouvelle clé d'API Google Maps a bien été enregistrée"

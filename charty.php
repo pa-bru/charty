@@ -22,6 +22,7 @@ class Charty {
 
 	protected static $charty;
     protected $mce;
+    protected $config_page;
 
 	protected $countries;
 	protected $continents_and_subs;
@@ -39,11 +40,13 @@ class Charty {
 		$this->setProperties();
 
         require($this->plugin_path . 'inc/ChartyMce.php');
-
         $this->mce = new ChartyMce();
+
+        require($this->plugin_path . 'inc/ChartyConfigMenu.php');
+        $this->config_page = new ChartyConfigMenu($this->plugin_l10n);
 	
 		//apply translation of the plugin :
-		add_action( 'plugins_loaded', array( $this, 'charty_load_textdomain'));
+		add_action( 'init', array( $this, 'charty_load_textdomain'));
 		//register charty custom post type :
 		add_action( 'init', array($this,'charty'), 0 );
 		//add the scripts :
@@ -59,6 +62,16 @@ class Charty {
 		// create shortcode :
 		add_shortcode('charty_shortcode', array($this,'charty_shortcode'));
 	}
+
+    // String to Array function :
+    public function strToArray($str, $separation){
+        $tab = explode($separation, $str);
+        return $tab;
+    }
+
+    public function mytrim( &$item1, $key, &$separation ) {
+        $item1 = trim($item1, $separation);
+    }
 
 	public function setProperties(){
 		$this->plugin_path    			= plugin_dir_path( __FILE__ );
@@ -137,16 +150,6 @@ class Charty {
 		}
 	}
 
-	// String to Array function :
-    public function strToArray($str, $separation){
-        $tab = explode($separation, $str);
-        return $tab;
-    }
-
-	public function mytrim( &$item1, $key, &$separation ) {
-	    $item1 = trim($item1, $separation);
-	}
-
 	//write meta box :
 	public function charty_meta_box($post){
         //geo chart type :
@@ -176,7 +179,7 @@ class Charty {
 			<div class="charty-alert charty-alert-warning">
     	       <p><?php _e('Warning : for the two modes (map and geochart) you must add exactly 2 columns (ex: City; Population) !', $this->plugin_l10n); ?></p>
                <ul>
-                   <li><?php _e('geochart syntax : country or city; Number', $this->plugin_l10n); ?></li>
+                   <li><?php _e('Geochart syntax : country or city; Number', $this->plugin_l10n); ?></li>
                    <li><?php _e('Map syntax : place; text or number', $this->plugin_l10n); ?></li>
                </ul>
     	    </div>
@@ -199,7 +202,7 @@ class Charty {
             </div>
 
             <div class="meta-box-item-content">
-                <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>" required/>
+                <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>" <?php if(get_option("default_google_maps_api_key") === null){ echo "required";} ?>/>
             </div>
         <!-- END CHARTY GOOGLE MAPS API KEY -->
 
@@ -221,7 +224,7 @@ class Charty {
             <div class="meta-box-item-title">
                 <h4>
                     <?php
-                    _e('Labels of the chart (same number of column as data column) :', $this->plugin_l10n);
+                    _e('Labels of the chart (same number of columns as data columns) :', $this->plugin_l10n);
                     ?>
                 </h4>
             </div>
@@ -243,7 +246,7 @@ class Charty {
             <div class="meta-box-item-content charty-alert charty-alert-info">
                 <p><?php _e('Separate each value by a semi column and each entity of the chart by a new line', $this->plugin_l10n); ?></p>
                 <p><?php _e('The first data must be a Country or City (and must belong to the region you have chosen to display the geochart).The second data must be a number but can be a string if you chose the Map Type!', $this->plugin_l10n); ?></p>
-                <p><?php _e('Exemple : Paris;3456.98 ', $this->plugin_l10n); ?></p>
+                <p><?php _e('Exemple : Paris;3456.98', $this->plugin_l10n); ?></p>
                 <textarea rows="10" style="width:100%" name="charty_data" id="charty_data" required><?php echo $charty_data; ?></textarea>
             </div>
         <!-- END CHARTY DATA ARRAY -->
@@ -385,7 +388,7 @@ class Charty {
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Zoom Level of the map. (between 0 and 19', $this->plugin_l10n);
+                            _e('Zoom Level of the map. (between 0 and 19)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
@@ -437,15 +440,32 @@ class Charty {
 			return $post_ID;
 		}
 		//type, labels and data are necessary to create the chart :
-		if(!isset($_POST['charty_type']) || empty($_POST['charty_labels']) || empty($_POST['charty_data']) || empty($_POST['charty_maps_api_key'])){
+		if(!isset($_POST['charty_type']) || empty($_POST['charty_labels']) || empty($_POST['charty_data'])){
 			return $post_ID;
 		}
+        //verify if the map api key is given in option or at least in the form :
+        if(empty($_POST['charty_maps_api_key']) && !get_option("default_google_maps_api_key")){
+            return $post_ID;
+        }
 
         //global data :
         update_post_meta($post_ID,'_charty_type', sanitize_text_field($_POST['charty_type']));
         update_post_meta($post_ID,'_charty_description', sanitize_text_field($_POST['charty_description']));
-        update_post_meta($post_ID,'_charty_labels', sanitize_text_field($_POST['charty_labels']));
-        update_post_meta($post_ID,'_charty_data', esc_textarea($_POST['charty_data']));
+
+        $charty_labels = $_POST['charty_labels'];
+        $charty_labels = trim($charty_labels);
+        $charty_labels = trim($charty_labels, ";");
+        update_post_meta($post_ID,'_charty_labels', sanitize_text_field($charty_labels));
+
+        $charty_data = $_POST['charty_data'];
+        $charty_data = trim($charty_data);
+        $array_of_lines = $this->strToArray($charty_data, "\n");
+        $array_of_lines = array_map('trim',$array_of_lines);
+        array_walk($array_of_lines, array($this, 'mytrim'), ";" );
+        //recreate a text with each line separated by a line break
+        $charty_data = implode("\n",$array_of_lines);
+        update_post_meta($post_ID,'_charty_data', esc_textarea($charty_data));
+
         update_post_meta($post_ID,'_charty_maps_api_key', sanitize_text_field($_POST['charty_maps_api_key']));
 
         if($_POST['charty_type'] == "geo_chart"){
@@ -453,7 +473,12 @@ class Charty {
             update_post_meta($post_ID,'_charty_display_mode', sanitize_text_field($_POST['charty_display_mode']));
             update_post_meta($post_ID,'_charty_region', sanitize_text_field($_POST['charty_region']));
             update_post_meta($post_ID,'_charty_tooltip_trigger', sanitize_text_field($_POST['charty_tooltip_trigger']));
-            update_post_meta($post_ID,'_charty_color_axis', sanitize_text_field($_POST['charty_color_axis']));
+
+            $charty_color_axis = $_POST['charty_color_axis'];
+            $charty_color_axis = trim($charty_color_axis);
+            $charty_color_axis = trim($charty_color_axis, ";");
+            update_post_meta($post_ID,'_charty_color_axis', sanitize_text_field($charty_color_axis));
+
             update_post_meta($post_ID,'_charty_bg_color', sanitize_text_field($_POST['charty_bg_color']));
             update_post_meta($post_ID,'_charty_dataless_region_color', sanitize_text_field($_POST['charty_dataless_region_color']));
             update_post_meta($post_ID,'_charty_default_color', sanitize_text_field($_POST['charty_default_color']));
@@ -469,7 +494,7 @@ class Charty {
 		//verifying if id parameter in shortcode is an int :
 			$atts['id'] = intval($atts['id']);
 			if ( !$atts['id'] ){
-				return __('Chart cannot be displayed because of a false shortcode', $this->plugin_l10n);
+				return __('Chart cannot be displayed.', $this->plugin_l10n);
 			}
 
 		//verifying if post is a charty and if it exists :
@@ -478,13 +503,18 @@ class Charty {
 				return false;
 			}
 
-        //TODO : extract default settings !
-
         /*
          * Global Data :
          */
-        //API Key :
+        //API Key : if a key is written on the form we use it elseif we use the default key (written in settings) and if no default key we return an error :
+        if(!empty(get_post_meta($atts['id'],'_charty_maps_api_key',true))){
             $charty_maps_api_key = get_post_meta($atts['id'],'_charty_maps_api_key',true);
+        } else{
+            if(get_option("default_google_maps_api_key") === null){
+                return $atts['id'];
+            }
+            $charty_maps_api_key = get_option("default_google_maps_api_key");
+        }
 
         //Charty type :
             $charty_type = get_post_meta($atts['id'],'_charty_type',true);
@@ -535,6 +565,9 @@ class Charty {
                 $charty_description = substr( $charty_description, 0, self::DESCRIPTION_MAX_LENGTH );
             }
 
+        /*
+         * DATA for each type of chart :
+         */
         switch($charty_type){
             case "geo_chart":
                 //Display Mode :
