@@ -8,7 +8,6 @@ Author: P-A BRU
 Author URI: https://www.pa-bru.fr/
 */
 
-
 //blocking direct access to the plugin PHP files	
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
@@ -27,7 +26,7 @@ class Charty {
 	protected $countries;
 	protected $continents_and_subs;
 
-	const DESCRIPTION_MAX_LENGTH = 100;
+	const DESCRIPTION_MAX_LENGTH = 200;
 
 	public static function get_instance(){
         if(!(static::$charty instanceof static)){
@@ -125,11 +124,11 @@ class Charty {
 
     public function add_admin_scripts() {
         wp_enqueue_script('jquery');
-        wp_enqueue_script('charty_panel', plugins_url( '/js/charty-panel.js', __FILE__ ), array('jquery'), $this->plugin_version, true);
+        wp_enqueue_script('charty_panel', plugins_url( '/js/charty_panel.js', __FILE__ ), array('jquery'), $this->plugin_version, true);
 	}
 
 	public function charty_admin_styles(){
-        wp_enqueue_style( 'charty_styles', plugin_dir_url( __FILE__ ) . '/css/charty-styles.css' );
+        wp_enqueue_style( 'charty_styles', plugin_dir_url( __FILE__ ) . '/css/charty_styles.css' );
 	}
 
 	public function charty_meta_boxes($post_type, $post){
@@ -200,7 +199,7 @@ class Charty {
             </div>
 
             <div class="meta-box-item-content">
-                <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>"/>
+                <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>" required/>
             </div>
         <!-- END CHARTY GOOGLE MAPS API KEY -->
 
@@ -229,7 +228,7 @@ class Charty {
 
             <div class="meta-box-item-content charty-alert charty-alert-info">
                 <p><?php _e('Put 2 labels. Separate each label by a semi column', $this->plugin_l10n); ?></p>
-                <input maxlength="200" style="width:100%" type="text" name="charty_labels" id="charty_labels" value="<?php echo $charty_labels;?>"/>
+                <input maxlength="200" style="width:100%" type="text" name="charty_labels" id="charty_labels" value="<?php echo $charty_labels;?>" required/>
             </div>
         <!-- END CHARTY LABELS ARRAY -->
 
@@ -245,7 +244,7 @@ class Charty {
                 <p><?php _e('Separate each value by a semi column and each entity of the chart by a new line', $this->plugin_l10n); ?></p>
                 <p><?php _e('The first data must be a Country or City (and must belong to the region you have chosen to display the geochart).The second data must be a number but can be a string if you chose the Map Type!', $this->plugin_l10n); ?></p>
                 <p><?php _e('Exemple : Paris;3456.98 ', $this->plugin_l10n); ?></p>
-                <textarea rows="10" style="width:100%" name="charty_data" id="charty_data"><?php echo $charty_data; ?></textarea>
+                <textarea rows="10" style="width:100%" name="charty_data" id="charty_data" required><?php echo $charty_data; ?></textarea>
             </div>
         <!-- END CHARTY DATA ARRAY -->
 
@@ -254,10 +253,10 @@ class Charty {
 				<h4><?php _e('Choose the type of Map (map or geographic chart)', $this->plugin_l10n); ?></h4>
 			</div>
 
-            <input type="radio" name="charty_type" class="charty_type" id="charty_type_geo_chart" value="geo_chart"  <?php checked( "geo_chart", $charty_type); ?>/>
+            <input type="radio" name="charty_type" class="charty_type" id="charty_type_geo_chart" value="geo_chart"  <?php checked( "geo_chart", $charty_type); ?> required/>
             <label for="charty_type_geo_chart"><?php _e('Geo chart', $this->plugin_l10n); ?></label>
 
-            <input type="radio" name="charty_type" class="charty_type" id="charty_type_map" value="map" <?php checked( "map", $charty_type); ?>/>
+            <input type="radio" name="charty_type" class="charty_type" id="charty_type_map" value="map" <?php checked( "map", $charty_type); ?> required/>
             <label for="charty_type_map"><?php _e('Map', $this->plugin_l10n); ?></label>
 		<!-- END CHARTY TYPE -->
 
@@ -289,7 +288,6 @@ class Charty {
                     <div class="meta-box-item-title">
                         <h4><?php _e('Region you want to display on your chart', $this->plugin_l10n); ?></h4>
                     </div>
-
                     <div class="meta-box-item-content">
                         <select name="charty_region" id="charty_region">
                             <option <?php selected( 'world', $charty_region ) ;?>value="world">world</option>
@@ -305,9 +303,8 @@ class Charty {
 
                 <!-- START CHARTY TOOLTIP TRIGGER -->
                     <div class="meta-box-item-title">
-                        <h4><?php _e('Region you want to display on your chart', $this->plugin_l10n); ?></h4>
+                        <h4><?php _e('Tooltip trigger : The user interaction that causes the tooltip to be displayed:', $this->plugin_l10n); ?></h4>
                     </div>
-
                     <div class="meta-box-item-content">
                         <select name="charty_tooltip_trigger" id="charty_tooltip_trigger">
                             <option <?php selected( 'focus', $charty_tooltip_trigger ) ;?>value="focus">focus</option>
@@ -321,13 +318,14 @@ class Charty {
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Color Axis : Colors to assign to values in the visualization. It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)', $this->plugin_l10n);
+                            _e('Color Axis : Colors to assign to values in the visualization.', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
 
                     <div class="meta-box-item-content">
-                        <input maxlength="200" style="" type="text" name="charty_color_axis" id="charty_color_axis" value="<?php echo $charty_color_axis;?>"/>
+                        <p><?php _e('It creates a gradient with specified colors. Separate each label by a semi column. You must add at least 2 colors (by name or hexadecimal value)', $this->plugin_l10n); ?></p>
+                        <input maxlength="200" style="width: 30%;" type="text" name="charty_color_axis" id="charty_color_axis" value="<?php echo $charty_color_axis;?>" placeholder="ex: #e7711c; #4374e0"/>
                     </div>
                 <!-- END CHARTY COLOR AXIS ARRAY -->
 
@@ -341,7 +339,7 @@ class Charty {
                     </div>
 
                     <div class="meta-box-item-content">
-                        <input maxlength="15" style="" type="text" name="charty_bg_color" id="charty_bg_color" value="<?php echo $charty_bg_color;?>"/>
+                        <input maxlength="15" style="width: 30%;" type="text" name="charty_bg_color" id="charty_bg_color" value="<?php echo $charty_bg_color;?>" placeholder="ex: #81d4fa"/>
                     </div>
                 <!-- END CHARTY BG COLOR -->
 
@@ -349,13 +347,13 @@ class Charty {
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('Dataless Region color :Color to assign to regions with no associated data.(by name or hexadecimal value)', $this->plugin_l10n);
+                            _e('Dataless Region color : Color to assign to regions with no associated data.(by name or hexadecimal value)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
 
                     <div class="meta-box-item-content">
-                        <input maxlength="15" style="" type="text" name="charty_dataless_region_color" id="charty_dataless_region_color" value="<?php echo $charty_dataless_region_color;?>"/>
+                        <input maxlength="15" style="width: 30%;" type="text" name="charty_dataless_region_color" id="charty_dataless_region_color" value="<?php echo $charty_dataless_region_color;?>" placeholder="ex: #f8bbd0"/>
                     </div>
                 <!-- END CHARTY DATALESS REGION COLOR -->
 
@@ -363,13 +361,12 @@ class Charty {
                     <div class="meta-box-item-title">
                         <h4>
                             <?php
-                            _e('The color to use when for data points in a geochart when the location is present but the value is either null or unspecified.(by name or hexadecimal value)', $this->plugin_l10n);
+                            _e('Default color : The color to use for data points in a geochart when the location is present but the value is either null or unspecified.(by name or hexadecimal value)', $this->plugin_l10n);
                             ?>
                         </h4>
                     </div>
-
                     <div class="meta-box-item-content">
-                        <input maxlength="15" style="" type="text" name="charty_default_color" id="charty_default_color" value="<?php echo $charty_default_color;?>"/>
+                        <input maxlength="15" style="width: 30%;" type="text" name="charty_default_color" id="charty_default_color" value="<?php echo $charty_default_color;?>" placeholder="ex: #f5f5f5"/>
                     </div>
                 <!-- END CHARTY DEFAULT COLOR -->
             </div>
@@ -392,7 +389,6 @@ class Charty {
                             ?>
                         </h4>
                     </div>
-
                     <div class="meta-box-item-content">
                         <p><?php _e('Put a number between 0 and 19. 0 is the world and 19 is the maximum zoom.', $this->plugin_l10n); ?></p>
                         <input type="number" style="" min="0" max="19" name="charty_map_zoom_level" id="charty_map_zoom_level" value="<?php echo $charty_map_zoom_level ;?>" placeholder="ex : 4"/>
@@ -420,7 +416,7 @@ class Charty {
                         <h4><?php _e('Map Type Control : Authorize the viewer to switch between [map, satellite, hybrid, terrain]', $this->plugin_l10n); ?></h4>
                     </div>
 
-                    <input type="radio" name="charty_map_type_control" id="charty_map_type_control_false" value="false"  <?php checked( "false", $charty_map_type_control); ?>/>
+                    <input type="radio" name="charty_map_type_control" id="charty_map_type_control_false" value="false" checked="checked"  <?php checked( "false", $charty_map_type_control); ?>/>
                     <label for="charty_map_type_control_false"><?php _e('No', $this->plugin_l10n); ?></label>
 
                     <input type="radio" name="charty_map_type_control" id="charty_map_type_control_true" value="true" <?php checked( "true", $charty_map_type_control); ?>/>
@@ -441,7 +437,7 @@ class Charty {
 			return $post_ID;
 		}
 		//type, labels and data are necessary to create the chart :
-		if(!isset($_POST['charty_type']) || empty($_POST['charty_labels']) || empty($_POST['charty_data'])){
+		if(!isset($_POST['charty_type']) || empty($_POST['charty_labels']) || empty($_POST['charty_data']) || empty($_POST['charty_maps_api_key'])){
 			return $post_ID;
 		}
 
@@ -456,9 +452,9 @@ class Charty {
             // geochart type :
             update_post_meta($post_ID,'_charty_display_mode', sanitize_text_field($_POST['charty_display_mode']));
             update_post_meta($post_ID,'_charty_region', sanitize_text_field($_POST['charty_region']));
+            update_post_meta($post_ID,'_charty_tooltip_trigger', sanitize_text_field($_POST['charty_tooltip_trigger']));
             update_post_meta($post_ID,'_charty_color_axis', sanitize_text_field($_POST['charty_color_axis']));
             update_post_meta($post_ID,'_charty_bg_color', sanitize_text_field($_POST['charty_bg_color']));
-            update_post_meta($post_ID,'_charty_tooltip_trigger', sanitize_text_field($_POST['charty_tooltip_trigger']));
             update_post_meta($post_ID,'_charty_dataless_region_color', sanitize_text_field($_POST['charty_dataless_region_color']));
             update_post_meta($post_ID,'_charty_default_color', sanitize_text_field($_POST['charty_default_color']));
         } elseif($_POST['charty_type'] == "map"){
@@ -503,6 +499,10 @@ class Charty {
             $charty_labels = trim($charty_labels, ";");
             $charty_labels = $this->strToArray($charty_labels, ";");
             $charty_labels = array_map('trim',$charty_labels);
+            //make sure there is max 2 labels :
+            if(count($charty_labels) > 2){
+                $charty_labels = array_slice($charty_labels, 0, 2);
+            }
 
         //data :
             $charty_data = get_post_meta($atts['id'],'_charty_data',true);
@@ -519,6 +519,11 @@ class Charty {
                 $line_to_array = $this->strToArray($line, ";");
                 $line_to_array = array_map('trim',$line_to_array);
 
+                //make sure there is max 2 data per line :
+                if(count($line_to_array) > 2){
+                    $line_to_array = array_slice($line_to_array, 0, 2);
+                }
+                //force geo_chart to have a second column of type INT : (map can have a second data of type string)
                 if($charty_type == "geo_chart"){
                     $line_to_array[1] = (int)$line_to_array[1];
                 }
