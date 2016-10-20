@@ -80,6 +80,7 @@ Screenshots
 1. Charty button on Wordpress editor :
 
 ![alt tag](assets/charty-listbox.png)
+
 2. Charty shortcode :
 
     `[charty_shortcode id=x]`
@@ -87,6 +88,7 @@ Screenshots
 3. Charty - an exemple with geographic chart Mode :
 
 ![alt tag](assets/charty-geochart.png)
+
 4. Charts Ninja - an example with google Maps mode :
 
 ![alt tag](assets/charty-map.png)
