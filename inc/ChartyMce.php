@@ -1,11 +1,4 @@
 <?php
-
-/**
- * Created by PhpStorm.
- * User: pabru
- * Date: 19/10/2016
- * Time: 18:11
- */
 class ChartyMce {
     public function __construct(){
         add_action( 'init', array($this,'charty_add_button'));

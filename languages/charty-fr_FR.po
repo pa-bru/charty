@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: charty - version 1.0 PluginReport-Msgid-Bugs-To: https://github.com/pa-bru/charty\n"
 "POT-Creation-Date: 2015-08-11 11:36-0500\n"
-"PO-Revision-Date: 2016-10-20 18:47+0200\n"
+"PO-Revision-Date: 2016-10-20 22:14+0200\n"
 "Last-Translator: P-A BRU <contact@pa-bru.com>\n"
 "Language-Team: P-A BRU <contact@pa-bru.com>\n"
 "Language: fr_FR\n"
@@ -200,6 +200,9 @@ msgstr "La carte ne peut pas être affichée."
 
 msgid "Charty Settings"
 msgstr "Paramètres de Charty"
+
+msgid "Charty Settings :"
+msgstr "Paramètres de Charty :"
 
 msgid "Settings"
 msgstr "Paramètres"

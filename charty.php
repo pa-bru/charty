@@ -1,12 +1,43 @@
 <?php
 /*
-Plugin name: Charty - a google geochart plugin 
-Description: This plugin enables you to create and manage google geographic charts. It's a useful tool to display demographic data on geographic charts but also on google maps (there is a Map display mode).
+Plugin name: Charty
+Description: Create and manage google geographic charts and maps. It's a useful tool to display demographic data on geographic charts but also on google maps (there is a Map display mode).
 You can also customize your geographic charts (title, content, context, background, color gradient...).
 Version: 1.0
-Author: P-A BRU
+Author: Paul-Adrien Bru
 Author URI: https://www.pa-bru.fr/
+License: GPLv2 or later
+Text Domain: charty
 */
+
+/**
+ * Copyright (c) 2016 Paul-Adrien Bru. All rights reserved.
+ *
+ * Released under the GPLv2 license
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This is an add-on for WordPress
+ * http://wordpress.org/
+ *
+ *
+ * **********************************************************************************
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * **********************************************************************************
+ *
+ *
+ */
 
 //blocking direct access to the plugin PHP files	
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
@@ -19,14 +50,11 @@ class Charty {
 	private $api_base = 'https://www.gstatic.com/charts/loader.js';
 	private $app_name = 'Charty';
 	private $cpt_name = 'charty';
-
 	protected static $charty;
     protected $mce;
     protected $config_page;
-
 	protected $countries;
 	protected $continents_and_subs;
-
 	const DESCRIPTION_MAX_LENGTH = 200;
 
 	public static function get_instance(){
@@ -118,7 +146,7 @@ class Charty {
 			'show_ui'               => true,
 			'show_in_menu'          => true,
 			'menu_position'         => 80,
-			'menu_icon'             => 'dashicons-chart-pie',
+			'menu_icon'             => $this->plugin_url . '/charty.png',
 			'show_in_admin_bar'     => true,
 			'show_in_nav_menus'     => true,
 			'can_export'            => true,
@@ -127,7 +155,7 @@ class Charty {
 			'publicly_queryable'    => true,
 			'capability_type'       => 'page',
 		);
-		register_post_type( 'charty', $args );
+		register_post_type( $this->plugin_l10n, $args );
 	}
 
 	public function add_plugin_scripts(){
@@ -643,5 +671,4 @@ class Charty {
 			return $display_charty;
 	}
 }
-
 Charty::get_instance();

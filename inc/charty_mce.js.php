@@ -21,7 +21,7 @@
                 ed.addButton('charty', {
                     type: 'listbox',
                     text: 'geo & map charts',
-                    icon: 'icon dashicons dashicons-admin-site',
+                    icon: 'icon charty-icon',
                     onselect: function (e) {
                         confirm("Warning : The plugin enables just one geo chart (or map chart) per page for the moment !\nPlease add just one shortcode.") ? ed.insertContent(this.value()) : null;
                     },
@@ -35,10 +35,10 @@
             getInfo : function() {
                 return {
                     longname : 'Shortcode selector for the charty plugin',
-                    author : 'P-A Bru',
+                    author : 'Paul-Adrien Bru',
                     authorurl : 'http://pa-bru.fr',
                     infourl : 'https://github.com/pa-bru/charty',
-                    version : "0.1"
+                    version : "1.0"
                 };
             }
         });

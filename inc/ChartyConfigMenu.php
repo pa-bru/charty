@@ -1,13 +1,5 @@
 <?php
-
-/**
- * Created by PhpStorm.
- * User: pabru
- * Date: 20/10/2016
- * Time: 10:51
- */
 class ChartyConfigMenu {
-
     protected $plugin_l10n;
     protected $notice_message;
     protected $notice_type;
@@ -32,7 +24,7 @@ class ChartyConfigMenu {
         ?>
         <div id="">
             <div class="charty-main-box">
-                <h1 class="charty-title">Charty Settings : </h1>
+                <h1 class="charty-title"><?php _e('Charty Settings :', $this->plugin_l10n); ?></h1>
                 <div class="charty-space-20"></div>
                 <div class="charty-alert charty-alert-info">
                     <?php _e('Here you can configure all the settings of the Charty plugin', $this->plugin_l10n); ?>

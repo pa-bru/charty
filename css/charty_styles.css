@@ -39,6 +39,9 @@
         margin-left: -2px;
         padding-right: 2px
     }
+    i.charty-icon {
+        background-image: url('../charty.png');
+    }
 
 /* TEXT */
     .charty-main-box{
