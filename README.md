@@ -79,19 +79,15 @@ Screenshots
 
 - Charty button on Wordpress editor :
 
-![alt tag](assets/charty-listbox.png)
-
-- Charty shortcode :
-
-    `[charty_shortcode id=x]`
+![alt tag](assets/screenshot-1.png)
 
 - Charty - an exemple with geographic chart Mode :
 
-![alt tag](assets/charty-geochart.png)
+![alt tag](assets/screenshot-2.png)
 
 - Charty - an example with google Maps mode :
 
-![alt tag](assets/charty-map.png)
+![alt tag](assets/screenshot-3.png)
 
 Changelog
 ===========
