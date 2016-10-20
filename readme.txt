@@ -87,9 +87,8 @@ Soon. At the moment it's static :
 == Screenshots ==
 
 1. Charty button on Wordpress editor
-2. Charty shortcode
-3. Charty - an exemple with geographic chart Mode
-4. Charts Ninja - an example with google Maps mode
+2. Charty - an exemple with geographic chart Mode
+3. Charty - an example with google Maps mode
 
 == Changelog ==
 
