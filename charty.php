@@ -146,7 +146,7 @@ class Charty {
 			'show_ui'               => true,
 			'show_in_menu'          => true,
 			'menu_position'         => 80,
-			'menu_icon'             => $this->plugin_url . '/charty.png',
+			'menu_icon'             => $this->plugin_url . '/assets/charty.png',
 			'show_in_admin_bar'     => true,
 			'show_in_nav_menus'     => true,
 			'can_export'            => true,
@@ -665,7 +665,7 @@ class Charty {
 		 * Return the content generated and replace the shortcode by that :
 		 */
 			$display_charty = '<h2>'.$charty_title.'</h2>'
-								.'<div id="charty_'.$atts['id'].'" style="height: 600px;"></div>'
+								.'<div id="charty_'.$atts['id'].'" style="height: 400px;"></div>'
 								.'<p style="text-align:center;font-style:italic;">'.$charty_description.'</p>';
 
 			return $display_charty;

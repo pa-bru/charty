@@ -41,7 +41,7 @@ Charty uses the Google Charts and Maps API. It means geocharts and maps are buil
 * Color palette themes for quick stylish data
 * Plugin Options for extensive chart control by setting your own sensible defaults
 
-== Installation ==
+== Installation & Usage ==
 
 1. Search Charty via plugins > add new.
 2. Find the plugin listed and click activate.
@@ -59,6 +59,15 @@ Charty uses the Google Charts and Maps API. It means geocharts and maps are buil
 2. Choose the chart you want to insert
 3. If you can't find the "Charty" listbox button, you may also copy/paste the shortcode given when you create/edit a chart. Example : [charty_shortcode id=chartid]
 
+= Export data in a csv file
+
+ =
+
+You can export data associated to all the charts you have created with the Charty plugin.
+
+1. Go in the settings submenu of Charty
+
+2. Click on the "Export" button to download the CSV file
 Arguments provides by the shortcode:
 
 * chartid : Your chart ID
