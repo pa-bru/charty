@@ -77,19 +77,19 @@ Soon. At the moment it's static :
 Screenshots
 ===========
 
-1. Charty button on Wordpress editor :
+- Charty button on Wordpress editor :
 
 ![alt tag](assets/charty-listbox.png)
 
-2. Charty shortcode :
+- Charty shortcode :
 
     `[charty_shortcode id=x]`
 
-3. Charty - an exemple with geographic chart Mode :
+- Charty - an exemple with geographic chart Mode :
 
 ![alt tag](assets/charty-geochart.png)
 
-4. Charts Ninja - an example with google Maps mode :
+- Charty - an example with google Maps mode :
 
 ![alt tag](assets/charty-map.png)
 
