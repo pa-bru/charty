@@ -105,11 +105,9 @@ class ChartyConfigMenu {
             $charty_posts = get_posts( $args );
 
             header("Content-Type: text/csv");
-            header("Content-Disposition: csv" . date("Y-m-d") . ".csv");
             header("Content-Disposition: attachment; filename=" . $this->plugin_l10n . "_".date("Y-m-d") . ".csv");
             header("Pragma: no-cache");
             header("Expires: 0");
-            ob_end_clean();
                 $out = fopen('php://output', 'w');
                 fputcsv($out, array(
                     "ID",
