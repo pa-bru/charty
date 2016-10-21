@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 return array(
     '002' => 'Africa',
     '015' => 'Northern Africa',

@@ -40,7 +40,7 @@ Text Domain: charty
  */
 
 //blocking direct access to the plugin PHP files	
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class Charty {
 	private $plugin_path;

@@ -1,18 +1,3 @@
-<?php
-    require_once('../../../../wp-load.php');
-    require_once('../../../../wp-admin/includes/admin.php');
-    do_action('admin_init');
-
-    if ( ! is_user_logged_in() )
-        die('You must be logged in to access this script.');
-    $args = array(
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'post_type' => 'charty',
-        'post_status' => 'publish'
-    );
-    $charty_posts = get_posts( $args );
-?>
 (function() {
 //******* Load plugin specific language pack
 //tinymce.PluginManager.requireLangPack('charty');
@@ -25,11 +10,7 @@
                     onselect: function (e) {
                         confirm("Warning : The plugin enables just one geo chart (or map chart) per page for the moment !\nPlease add just one shortcode.") ? ed.insertContent(this.value()) : null;
                     },
-                    values: [
-                        <?php foreach($charty_posts as $charty_post):?>
-                            { text: '<?php echo get_the_title($charty_post->ID); ?> - <?php echo get_the_date( "F j, Y g:i a", $charty_post->ID ); ?>', value: '[charty_shortcode id=<?php echo $charty_post->ID;?>]' },
-                        <?php endforeach;?>
-                    ]
+                    values: charty_posts_js
                 });
             },
             getInfo : function() {

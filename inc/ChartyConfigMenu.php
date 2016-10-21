@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 class ChartyConfigMenu {
     protected $plugin_l10n;
     protected $notice_message;
