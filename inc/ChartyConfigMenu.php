@@ -53,7 +53,7 @@ class ChartyConfigMenu {
                         <?php _e('Put your google Maps API Key here. you can override it when you create a new chart.', $this->plugin_l10n); ?>
                         <div class="charty-space-20"></div>
                         <form method="post" name="export_csv" action="">
-                            <input type="text" name="default_google_maps_api_key" value="<?php echo get_option('default_google_maps_api_key'); ?>">
+                            <input type="text" style="width:20%" name="default_google_maps_api_key" value="<?php echo get_option('default_google_maps_api_key'); ?>">
                             <input class="charty-button" type="submit" name="default_google_maps_api_key_submit" value="<?php _e('Add', $this->plugin_l10n); ?>">
                             <?php wp_nonce_field( 'save_default_google_maps_api_key', 'default_google_maps_api_key_nonce' ); ?>
                         </form>
