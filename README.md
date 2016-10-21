@@ -1,4 +1,4 @@
-# CHARTY
+# CHARTY ![alt tag](assets/charty.png)
 
 [Visit My Portfolio] (https://pa-bru.fr)
 
