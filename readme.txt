@@ -1,7 +1,9 @@
 === Charty ===
 Contributors: schrax
 Donate link: http://pa-bru.fr/
-Tags: comments, spam
+Tags: chart, charts, charting, graph, graphs, geochart, google geochart, google maps, map,
+graphing, visualisation, visualise data, visualization, visualize data, HTML5,
+plugin, widget, shortcode, geographic chart, demographic data, charty
 Requires at least: 4.0
 Tested up to: 4.6.1
 Stable tag: 1.0
