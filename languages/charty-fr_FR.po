@@ -233,3 +233,6 @@ msgstr "Votre clé d'API Google Maps par défaut a bien été supprimée"
 
 msgid "A new default Google Maps API Key is successfully added"
 msgstr "Une nouvelle clé d'API Google Maps a bien été enregistrée"
+
+msgid "The height of the chart (in pixel)"
+msgstr "La hauteur du schéma/de la carte (en pixel)"

@@ -76,15 +76,9 @@ Arguments provides by the shortcode:
 
 == Frequently Asked Questions ==
 
-= Can I insert several charts with charty on the same page ?=
+= Can I insert several charts with charty on the same page ? =
 
 NO. But in the next version you will be able to add several charties on the same page.
-
-= Chart Height ? width ? responsive charts ? whats going on ? =
-
-Soon. At the moment it's static : 
-* width: automatic
-* height: 600px
 
 == Screenshots ==
 
@@ -93,6 +87,9 @@ Soon. At the moment it's static :
 3. Charty - an example with google Maps mode
 
 == Changelog ==
+
+= 1.1 =
+* Added height parameter. Now you can choose a height for your chart box.
 
 = 1.0 =
 * Initial Version

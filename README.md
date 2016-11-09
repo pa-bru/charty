@@ -68,12 +68,6 @@ Frequently Asked Questions
 
 NO. But in the next version you will be able to add several charties on the same page.
 
-**Chart Height ? width ? responsive charts ? whats going on ?**
-
-Soon. At the moment it's static : 
-* width: automatic
-* height: 600px
-
 Screenshots
 ===========
 
@@ -91,8 +85,11 @@ Screenshots
 
 Changelog
 ===========
+**v1.1 :**
+* added height parameter. Now you can choose a height for your chart box.
 
-**v1.0** - Initial Version
+**v1.0**
+* Initial Version
 
 Upgrade Notice
 ===========

@@ -3,7 +3,7 @@
 Plugin name: Charty
 Description: Create and manage google geographic charts and maps. It's a useful tool to display demographic data on geographic charts but also on google maps (there is a Map display mode).
 You can also customize your geographic charts (title, content, context, background, color gradient...).
-Version: 1.0
+Version: 1.1
 Author: Paul-Adrien Bru
 Author URI: https://www.pa-bru.fr/
 License: GPLv2 or later
@@ -56,6 +56,7 @@ class Charty {
 	protected $countries;
 	protected $continents_and_subs;
 	const DESCRIPTION_MAX_LENGTH = 200;
+	const DEFAULT_HEIGHT = 600;
 
 	public static function get_instance(){
         if(!(static::$charty instanceof static)){
@@ -104,7 +105,7 @@ class Charty {
 	public function setProperties(){
 		$this->plugin_path    			= plugin_dir_path( __FILE__ );
 		$this->plugin_url     			= plugin_dir_url( __FILE__ );
-		$this->plugin_version 			= '1.0';
+		$this->plugin_version 			= '1.1';
 		$this->plugin_l10n    			= 'charty';
 		$this->countries      			= require_once( $this->plugin_path . 'inc/countries.php');
 		$this->continents_and_subs      = require_once( $this->plugin_path . 'inc/continents_and_subs.php');
@@ -195,6 +196,7 @@ class Charty {
 		$charty_labels =  get_post_meta($post->ID,'_charty_labels',true);
         $charty_maps_api_key =  get_post_meta($post->ID,'_charty_maps_api_key',true);
         $charty_type =  get_post_meta($post->ID,'_charty_type',true);
+        $charty_height =  get_post_meta($post->ID,'_charty_height',true);
 
         //map type :
         $charty_map_zoom_level =  get_post_meta($post->ID,'_charty_map_zoom_level',true);
@@ -233,6 +235,20 @@ class Charty {
                 <input style="width:100%" type="text" name="charty_maps_api_key" id="charty_maps_api_key" value="<?php echo $charty_maps_api_key;?>" <?php if(get_option("default_google_maps_api_key") === null){ echo "required";} ?>/>
             </div>
         <!-- END CHARTY GOOGLE MAPS API KEY -->
+
+        <!-- START CHARTY HEIGHT -->
+            <div class="meta-box-item-title">
+                <h4>
+                    <?php
+                    _e('The height of the chart (in pixel)', $this->plugin_l10n);
+                    ?>
+                </h4>
+            </div>
+
+            <div class="meta-box-item-content">
+                <input style="width:20%" type="number" name="charty_height" id="charty_height" value="<?php echo $charty_height;?>" required />
+            </div>
+        <!-- END CHARTY HEIGHT -->
 
         <!-- START CHARTY DESCRIPTION -->
             <div class="meta-box-item-title">
@@ -479,6 +495,7 @@ class Charty {
         //global data :
         update_post_meta($post_ID,'_charty_type', sanitize_text_field($_POST['charty_type']));
         update_post_meta($post_ID,'_charty_description', sanitize_text_field($_POST['charty_description']));
+        update_post_meta($post_ID,'_charty_height', sanitize_text_field($_POST['charty_height']));
 
         $charty_labels = $_POST['charty_labels'];
         $charty_labels = trim($charty_labels);
@@ -546,6 +563,14 @@ class Charty {
 
         //Charty type :
             $charty_type = get_post_meta($atts['id'],'_charty_type',true);
+
+        //Charty height :
+            if(!empty(get_post_meta($atts['id'],'_charty_height',true))){
+                $charty_height = get_post_meta($atts['id'],'_charty_height',true) . "px";
+            } else{
+                $charty_height = self::DEFAULT_HEIGHT . "px";
+            }
+
 
         //title :
             $charty_title = $charty_post->post_title;
@@ -665,7 +690,7 @@ class Charty {
 		 * Return the content generated and replace the shortcode by that :
 		 */
 			$display_charty = '<h2>'.$charty_title.'</h2>'
-								.'<div id="charty_'.$atts['id'].'" style="height: 600px;"></div>'
+								.'<div id="charty_'.$atts['id'].'" style="height: '. $charty_height .';"></div>'
 								.'<p style="text-align:center;font-style:italic;">'.$charty_description.'</p>';
 
 			return $display_charty;
