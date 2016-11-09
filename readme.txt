@@ -61,9 +61,7 @@ Charty uses the Google Charts and Maps API. It means geocharts and maps are buil
 2. Choose the chart you want to insert
 3. If you can't find the "Charty" listbox button, you may also copy/paste the shortcode given when you create/edit a chart. Example : [charty_shortcode id=chartid]
 
-= Export data in a csv file
-
- =
+= Export data in a csv file =
 
 You can export data associated to all the charts you have created with the Charty plugin.
 
