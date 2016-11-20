@@ -88,6 +88,7 @@ Changelog
 
 **v1.2 :**
 * You can now add and display several charts on the same page.
+* fix problem with color axis (for geo charts). It is now optional
 
 **v1.1 :**
 * added height parameter. Now you can choose a height for your chart box.
