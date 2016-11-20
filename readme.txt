@@ -1,7 +1,8 @@
 === google geographic charts and maps ===
 Contributors: schrax
 Donate link: http://pa-bru.fr/
-Tags: chart, charts, charting, graph, graphs, geochart, google geochart, google maps, map,
+Tags: chart, charts, charting, graph, graphs, geochart, geocharts, google geochart,
+google geocharts, google maps, map,
 graphing, visualisation, visualise data, visualization, visualize data, HTML5,
 plugin, widget, shortcode, geographic chart, demographic data, charty
 Requires at least: 4.0
