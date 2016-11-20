@@ -3,7 +3,7 @@
 Plugin name: Charty
 Description: Create and manage google geographic charts and maps. It's a useful tool to display demographic data on geographic charts but also on google maps (there is a Map display mode).
 You can also customize your geographic charts (title, content, context, background, color gradient...).
-Version: 1.1
+Version: 1.2
 Author: Paul-Adrien Bru
 Author URI: https://www.pa-bru.fr/
 License: GPLv2 or later
@@ -105,7 +105,7 @@ class Charty {
 	public function setProperties(){
 		$this->plugin_path    			= plugin_dir_path( __FILE__ );
 		$this->plugin_url     			= plugin_dir_url( __FILE__ );
-		$this->plugin_version 			= '1.1';
+		$this->plugin_version 			= '1.2';
 		$this->plugin_l10n    			= 'charty';
 		$this->countries      			= require_once( $this->plugin_path . 'inc/countries.php');
 		$this->continents_and_subs      = require_once( $this->plugin_path . 'inc/continents_and_subs.php');
@@ -160,8 +160,8 @@ class Charty {
 	}
 
 	public function add_plugin_scripts(){
-        wp_enqueue_script('charty_load_chart', plugins_url( '/js/charty_load_chart.js' , __FILE__ ), array("google_charts_api"), $this->plugin_version, true);
-        wp_enqueue_script('google_charts_api', $this->api_base , array(), false, true);
+        wp_enqueue_script('charty_load_chart', plugins_url( '/js/charty_load_chart.js' , __FILE__ ), array("google_charts_api"), $this->plugin_version, false);
+        wp_enqueue_script('google_charts_api', $this->api_base , array(), false, false);
     }
 
     public function add_admin_scripts() {
@@ -684,16 +684,19 @@ class Charty {
             'charty_type' => $charty_type
         );
         $variables_array = array_merge($variables_array, $spe_vars);
-        wp_localize_script( 'charty_load_chart', 'charty', $variables_array );
-		
+
+        $chartName = "charty_".$atts['id'];
 		/*
 		 * Return the content generated and replace the shortcode by that :
 		 */
-			$display_charty = '<h2>'.$charty_title.'</h2>'
-								.'<div id="charty_'.$atts['id'].'" style="height: '. $charty_height .';"></div>'
-								.'<p style="text-align:center;font-style:italic;">'.$charty_description.'</p>';
+        $display_charty = '<h2>'.$charty_title.'</h2>'
+                            .'<div id="charty_'.$atts['id'].'" style="height: '. $charty_height .';"></div>'
+                            .'<p style="text-align:center;font-style:italic;">'.$charty_description.'</p>'
+                            . '<script type="text/javascript">'
+                            . 'var ' . $chartName . ' = new Charty(' . json_encode($variables_array).');'
+                            . '</script>';
 
-			return $display_charty;
+        return $display_charty;
 	}
 }
 Charty::get_instance();

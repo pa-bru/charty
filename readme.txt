@@ -1,4 +1,4 @@
-=== Charty ===
+=== google geographic charts and maps ===
 Contributors: schrax
 Donate link: http://pa-bru.fr/
 Tags: chart, charts, charting, graph, graphs, geochart, google geochart, google maps, map,
@@ -6,7 +6,7 @@ graphing, visualisation, visualise data, visualization, visualize data, HTML5,
 plugin, widget, shortcode, geographic chart, demographic data, charty
 Requires at least: 4.0
 Tested up to: 4.6.1
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,7 +61,9 @@ Charty uses the Google Charts and Maps API. It means geocharts and maps are buil
 2. Choose the chart you want to insert
 3. If you can't find the "Charty" listbox button, you may also copy/paste the shortcode given when you create/edit a chart. Example : [charty_shortcode id=chartid]
 
-= Export data in a csv file =
+= Export data in a csv file
+
+ =
 
 You can export data associated to all the charts you have created with the Charty plugin.
 
@@ -76,7 +78,7 @@ Arguments provides by the shortcode:
 
 = Can I insert several charts with charty on the same page ? =
 
-NO. But in the next version you will be able to add several charties on the same page.
+Yes. It is possible since the 1.2 version of Charty !
 
 == Screenshots ==
 
@@ -85,6 +87,9 @@ NO. But in the next version you will be able to add several charties on the same
 3. Charty - an example with google Maps mode
 
 == Changelog ==
+
+= 1.2 =
+* You can now add and display several charts on the same page.
 
 = 1.1 =
 * Added height parameter. Now you can choose a height for your chart box.

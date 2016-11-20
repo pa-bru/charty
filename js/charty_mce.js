@@ -8,7 +8,7 @@
                     text: 'geo & map charts',
                     icon: 'icon charty-icon',
                     onselect: function (e) {
-                        confirm("Warning : The plugin enables just one geo chart (or map chart) per page for the moment !\nPlease add just one shortcode.") ? ed.insertContent(this.value()) : null;
+                        ed.insertContent(this.value());
                     },
                     values: charty_posts_js
                 });
@@ -19,7 +19,7 @@
                     author : 'Paul-Adrien Bru',
                     authorurl : 'http://pa-bru.fr',
                     infourl : 'https://github.com/pa-bru/charty',
-                    version : "1.0"
+                    version : "1.2"
                 };
             }
         });

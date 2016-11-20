@@ -66,7 +66,7 @@ Frequently Asked Questions
 
 **Can I insert several charts with charty on the same page ?**
 
-NO. But in the next version you will be able to add several charties on the same page.
+Yes. It is possible since the 1.2 version of Charty !
 
 Screenshots
 ===========
@@ -85,6 +85,10 @@ Screenshots
 
 Changelog
 ===========
+
+**v1.2 :**
+* You can now add and display several charts on the same page.
+
 **v1.1 :**
 * added height parameter. Now you can choose a height for your chart box.
 
