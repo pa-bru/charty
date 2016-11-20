@@ -39,7 +39,6 @@ Visualise your demographic and localized data in different ways. Each of them an
 Charty uses the Google Charts and Maps API. It means geocharts and maps are built on a powerfull service which is fast and offers loads of customisation options.
 
 ### Features Coming Soon ###
-* several charts on the same page
 * a charty widget
 * Color palette themes for quick stylish data
 * Plugin Options for extensive chart control by setting your own sensible defaults
